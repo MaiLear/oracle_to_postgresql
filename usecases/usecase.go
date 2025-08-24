@@ -2,8 +2,10 @@ package usecases
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	cockroachdbErrors "github.com/cockroachdb/errors"
 	"gitlab.com/sofia-plus/oracle_to_postgresql/usecases/ports/pipeline"
 )
 
@@ -14,7 +16,7 @@ type UseCase struct{
 }
 
 
-func (u UseCase) Execute()error{
+func (u UseCase) Execute()(err error){
 	var allErrors []error
 	ctx,cancel := context.WithTimeout(context.Background(),5 * time.Minute)
 	defer cancel()
@@ -23,4 +25,9 @@ func (u UseCase) Execute()error{
 			allErrors = append(allErrors, err)
 		}
 	}
+	if len(allErrors) > 0{
+		err = cockroachdbErrors.WithStack(errors.Join(allErrors...))
+		return
+	}
+	return
 }
