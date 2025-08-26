@@ -1,4 +1,4 @@
-package logger
+package loggers
 
 import (
 	"fmt"
@@ -7,12 +7,11 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-	"gitlab.com/sofia-plus/oracle_to_postgresql/domain/ports/in"
 )
 
 var (
-	InfoLogger  in.Logger
-	ErrorLogger in.Logger
+	InfoLogger  *log.Logger
+	ErrorLogger *log.Logger
 )
 
 // InitLogger inicializa los loggers para un componente específico (por ejemplo: "server" o "worker").

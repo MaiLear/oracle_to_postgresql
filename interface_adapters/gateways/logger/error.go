@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	domainDto "gitlab.com/sofia-plus/oracle_to_postgresql/domain/dto"
-	postgresqlRepPort "gitlab.com/sofia-plus/pg_oracle_etl_sync/internal/domain/ports/out/repositories/postgresql"
-	"gitlab.com/sofia-plus/pg_oracle_etl_sync/internal/infrastructure/logger"
+	//domainDto "gitlab.com/sofia-plus/oracle_to_postgresql/domain/dto"
+	//postgresqlRepPort "gitlab.com/sofia-plus/pg_oracle_etl_sync/internal/domain/ports/out/repositories/postgresql"
+	//"gitlab.com/sofia-plus/pg_oracle_etl_sync/internal/infrastructure/logger"
 	cockroachdbErrors "github.com/cockroachdb/errors"
 )
 
@@ -20,7 +20,7 @@ func NewError(postgresqlRepo postgresqlRepPort.ErrorRepository) Error {
 	}
 }
 
-func (e Error) LogErrorInFile(errorDto domainDto.ErrorDto){
+func (e Error) LogErrorInFile(errorDto domainDto.ErrorDto) {
 	message := fmt.Sprintf(
 		"[ERROR] entity=%s, local_id=%d, description=%s, state=%s",
 		errorDto.Entity,
@@ -31,18 +31,16 @@ func (e Error) LogErrorInFile(errorDto domainDto.ErrorDto){
 	logger.ErrorLogger.Println(message)
 }
 
-
-
-func (e Error) ErrorLog(ctx context.Context,allErrors []domainDto.ErroItem,entityName string,state string)error{
-	for _,err := range allErrors{
+func (e Error) ErrorLog(ctx context.Context, allErrors []domainDto.ErroItem, entityName string, state string) error {
+	for _, err := range allErrors {
 		errorDto := domainDto.ErrorDto{
-			Entity: entityName,
+			Entity:  entityName,
 			LocalID: err.LocalID,
-			Error: err.Err,
-			State: state,
+			Error:   err.Err,
+			State:   state,
 		}
 		e.LogErrorInFile(errorDto)
-		if err := e.SaveError(ctx,errorDto); err != nil{
+		if err := e.SaveError(ctx, errorDto); err != nil {
 			return cockroachdbErrors.WithStack(err)
 		}
 	}

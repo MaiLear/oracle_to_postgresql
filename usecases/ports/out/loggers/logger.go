@@ -6,7 +6,6 @@ import (
 	usecasesDto "gitlab.com/sofia-plus/oracle_to_postgresql/usecases/dto"
 )
 
-type Logger interface{
-	Save(context.Context,usecasesDto.LogError) error
+type Logger interface {
+	Save(context.Context, usecasesDto.LogError) error
 }
-

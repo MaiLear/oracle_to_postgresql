@@ -1,42 +1,30 @@
 package repositories
 
 import (
-	"gitlab.com/sofia-plus/pg_oracle_etl_sync/internal/infrastructure/config/bootstrap/datasources"
-	"gitlab.com/sofia-plus/pg_oracle_etl_sync/internal/infrastructure/repositories/postgresql"
+	"log"
+
+	dbConfig "gitlab.com/sofia-plus/go_db_connectors/config"
+	"gitlab.com/sofia-plus/oracle_to_postgresql/domain/ports/repositories"
+	"gitlab.com/sofia-plus/oracle_to_postgresql/interface_adapters/gateways/db/repositories/postgresql"
+	"gorm.io/gorm"
 )
 
 type PostgresqlRepository struct {
-	UserRepository        postgresql.UserRepository
-	PeopleRepository        postgresql.PeopleRepository
-	BasicDataUserRepository        postgresql.BasicDataUserRepository
-	UserLocationRepository        postgresql.UserLocationRepository
-	EnrollmentRepository 	  postgresql.EnrollmentRepository
-	ErrorRepository       postgresql.ErrorRepository
-	ApplicantRepository postgresql.ApplicantRepository
-	ParameterRepository postgresql.ParameterRepository
-	DocumentTypeRepository postgresql.DocumentTypeRepository
+	TrainingProgram repositories.RepositoryWrite
+}
+
+func initPosConnection() (connection *gorm.DB) {
+	connection, err := dbConfig.NewPostgresConnection()
+	if err != nil {
+		log.Fatalf("infra: fallo al conectar a PostgreSQL -> %v", err)
+	}
+	return connection
 }
 
 func InitPosRepository() PostgresqlRepository {
-	dataSources := datasources.InitPosDataSorce()
-	userRepository := postgresql.NewUserRepository(dataSources.UserDataSource)
-	peopleRepository := postgresql.NewPeopleRepository(dataSources.PeopleDataSource)
-	basicDataUserRepository := postgresql.NewBasicDataUserRepository(dataSources.BasicDataUserDataSource)
-	userLocationRepository := postgresql.NewUserLocationRepository(dataSources.UserLocationDataSource)
-	enrollmentRepository := postgresql.NewEnrollmentRepository(dataSources.EnrollmentDataSource)
-	errorRepository := postgresql.NewErrorRepository(dataSources.ErrorDataSource)
-	applicantRepository := postgresql.NewApplicantRepository(dataSources.ApplicantDataSource)
-	parameterRepository := postgresql.NewParameterRepository(dataSources.ParameterDataSource)
-	documentTypeRepository := postgresql.NewDocumentTypeRepository(dataSources.DocumentTypeDataSource)
+	dbConnection := initPosConnection()
+	trainingProgram := postgresql.NewTrainingProgram(dbConnection)
 	return PostgresqlRepository{
-		UserRepository: userRepository,
-		PeopleRepository: peopleRepository,
-		BasicDataUserRepository: basicDataUserRepository,
-		UserLocationRepository: userLocationRepository,
-		EnrollmentRepository: enrollmentRepository,
-		ErrorRepository: errorRepository,
-		ApplicantRepository: applicantRepository,
-		ParameterRepository: parameterRepository,
-		DocumentTypeRepository: documentTypeRepository,
+		TrainingProgram: trainingProgram,
 	}
 }

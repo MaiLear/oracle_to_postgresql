@@ -1,4 +1,4 @@
-package oracle
+package postgresql
 
 import (
 	"context"
@@ -17,7 +17,6 @@ func NewTrainingProgram(dbConnection *gorm.DB) TrainingProgram{
 	}
 }
 
-func (t TrainingProgram) Get(ctx context.Context) (programs []entities.TrainingProgram, err error){
-	t.dbConnection.
-	return nil,nil
+func (t TrainingProgram) Upsert(context.Context, entities.TrainingProgram) error{
+	return nil
 }

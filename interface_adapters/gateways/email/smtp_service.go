@@ -8,7 +8,7 @@ import (
 	"time"
 
 	cockroachdbErrors "github.com/cockroachdb/errors"
-	"gitlab.com/sofia-plus/pg_oracle_etl_sync/internal/domain/ports/out/services"
+	//"gitlab.com/sofia-plus/pg_oracle_etl_sync/internal/domain/ports/out/services"
 	"gopkg.in/mail.v2"
 )
 

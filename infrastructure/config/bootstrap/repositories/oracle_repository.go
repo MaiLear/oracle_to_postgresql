@@ -1,36 +1,29 @@
 package repositories
 
 import (
-	"gitlab.com/sofia-plus/pg_oracle_etl_sync/internal/infrastructure/config/bootstrap/datasources"
-	"gitlab.com/sofia-plus/pg_oracle_etl_sync/internal/infrastructure/repositories/oracle"
+	"log"
+
+	dbConfig "gitlab.com/sofia-plus/go_db_connectors/config"
+	"gitlab.com/sofia-plus/oracle_to_postgresql/domain/ports/repositories"
+	"gitlab.com/sofia-plus/oracle_to_postgresql/interface_adapters/gateways/db/repositories/oracle"
+	"gorm.io/gorm"
 )
 
 type OracleRepository struct {
-	UserRepository         oracle.UserRepository
-	PeopleRepository         oracle.PeopleRepository
-	ApplicantRepository         oracle.ApplicantRepository
-	EnrollmentRepository         oracle.EnrollmentRepository
-	EnrollmentValidationRepository oracle.EnrollmentValidationRepository
-	ParameterRepository oracle.ParameterRepository
-	DocumentTypeRepository oracle.DocumentTypeRepository
+	TrainingProgram repositories.RepositoryReader
 }
 
+func initOraConnection() (connection *gorm.DB) {
+	connection, err := dbConfig.NewOracleConnection()
+	if err != nil {
+		log.Fatalf("infra: fallo al conectar a Oracle -> %v", err)
+	}
+	return connection
+}
 func InitOraRepository() OracleRepository {
-	dataSources := datasources.InitOraDataSorce()
-	userRepository := oracle.NewUserRepository(dataSources.UserDataSource)
-	enrollmentRepository := oracle.NewEnrollmentRepository(dataSources.EnrollmentDataSource,dataSources.EnrollmentStoredProcedureDataSource)
-	peopleRepository := oracle.NewPeopleRepository(dataSources.PeopleDataSource)
-	applicantRepository := oracle.NewApplicantRepository(dataSources.ApplicantDataSource)
-	enrollmentValidationRepository := oracle.NewEnrollmentValidationRepository(dataSources.EnrollmentValidationDataSource)
-	parameterRepository := oracle.NewParameterRepository(dataSources.ParameterDataSource)
-	documentTypeRepository := oracle.NewDocumentTypeRepository(dataSources.DocumentTypeDataSource)
+	dbConnection := initOraConnection()
+	trainingProgram := oracle.NewTrainingProgram(dbConnection)
 	return OracleRepository{
-		UserRepository: userRepository,
-		PeopleRepository: peopleRepository,
-		ApplicantRepository: applicantRepository,
-		EnrollmentRepository: enrollmentRepository,
-		EnrollmentValidationRepository: enrollmentValidationRepository,
-		ParameterRepository: parameterRepository,
-		DocumentTypeRepository: documentTypeRepository,
+		TrainingProgram: trainingProgram,
 	}
 }
