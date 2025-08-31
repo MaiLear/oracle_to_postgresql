@@ -3,8 +3,6 @@ package usecases
 import (
 	"context"
 	"errors"
-	"time"
-
 	cockroachdbErrors "github.com/cockroachdb/errors"
 	"gitlab.com/sofia-plus/oracle_to_postgresql/usecases/ports/pipeline"
 )
@@ -19,10 +17,8 @@ func NewUseCase(usecases []pipeline.Service)UseCase{
 	}
 }
 
-func (u UseCase) Execute() (err error) {
+func (u UseCase) Execute(ctx context.Context) (err error) {
 	var allErrors []error
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-	defer cancel()
 	for _, usecase := range u.usecases {
 		if err := usecase.SynchronizeData(ctx); err != nil {
 			allErrors = append(allErrors, err)

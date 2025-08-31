@@ -1,5 +1,7 @@
 package in
 
+import "context"
+
 type Port interface{
-	Execute() error
+	Execute(context.Context) error
 }

@@ -27,7 +27,12 @@ func (t TrainingProgram) SynchronizeData(ctx context.Context) (err error) {
 		err = cockroachdbErrors.WithStack(err)
 		return
 	}
+	return
 	for _,program := range programs{
+		if ctx.Err() != nil{
+			allErrors = append(allErrors, ctx.Err())
+			break
+		}
 		if err = t.repositoryWriter.Upsert(ctx, program); err != nil {
 			allErrors = append(allErrors, err)
 		}
